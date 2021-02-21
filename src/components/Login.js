@@ -9,16 +9,22 @@ const Login = () => {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [msgError, setMsgError] = useState(null)
 
     const RegistrarUsuario = (e) => {
         e.preventDefault()
-        try{
-            auth.createUserWithEmailAndPassword(email, password)
-            alert('Usuario registrado')
-        }catch(e){
-            console.log(e)
+        auth.createUserWithEmailAndPassword(email, password)
+            .then( r => alert('Usuario registrado'))
+            .catch(e => {
+                if(e.code == 'auth/invalid-email'){
+                    setMsgError('Formato incorrecto')
+                }
+                if(e.code == 'auth/weak-password'){
+                    setMsgError('La password debe tener 6 caracteres o mas')
+                }
+            })
         }
-    }
+    
 
 
 
@@ -43,6 +49,19 @@ const Login = () => {
                 value="Registrar Usuario"
                 type="submit"/>
         </form>
+           {
+               msgError != null ? (
+                   <div>
+                        {msgError}
+                   </div>
+               ):(
+                   <span>
+
+                   </span>
+               )
+           } 
+
+
       </div>
       <div className="col"></div>
     </div>
