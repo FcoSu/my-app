@@ -1,26 +1,28 @@
 /* eslint-disable no-undef */
 import React, { useState } from "react";
 import { auth } from "../firebaseconfig";
+import {useHistory} from 'react-router-dom';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [msgError, setMsgError] = useState(null);
+
+    const historial = useHistory()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [msgError, setMsgError] = useState(null);
 
   const RegistrarUsuario = (e) => {
     e.preventDefault();
     auth
       .createUserWithEmailAndPassword(email, password)
       .then((r) => {
-        alert("Usuario registrado");
-        setMsgError(null);
+        historial.push('/')        
       })
       .catch((e) => {
         if (e.code == "auth/invalid-email") {
-          setMsgError("Formato incorrecto");
+          setMsgError("Formato incorrecto")
         }
         if (e.code == "auth/weak-password") {
-          setMsgError("La password debe tener 6 caracteres o mas");
+          setMsgError("La password debe tener 6 caracteres o mas")
         }
       });
   };
@@ -29,8 +31,8 @@ const Login = () => {
     auth
       .signInWithEmailAndPassword(email, password)
       .then((r) => {
-        console.log(r);
-        setMsgError(null);
+        historial.push('/')
+        
       })
       .catch((err) => {
         if (err.code == "auth/wrong-password") {
