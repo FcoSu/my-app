@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { store } from "../firebaseconfig";
 
 const Admin = () => {
+  const [modoEdicion, setModoEdicion] = useState(null)
   const [tarea, setTarea] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [todos, setTodos] = useState("");
+  const [idtarea, setIdTarea] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -53,12 +55,45 @@ const Admin = () => {
       console.log(e);
     }
   };
+  const setUpdate = async (e) =>{
+    e.preventDefault();
+    if (!tarea.trim()) {
+      setError("La tarea no puede estar vacía");
+    }
+    if (!descripcion.trim()) {
+      setError("La descripción no puede estar vacía");
+    }
+    if (!descripcion.trim() && !tarea.trim()) {
+      setError("Los campos no pueden estar vacíos");
+    }
+
+    const tareaUpdate = {
+      tarea: tarea,
+      descripcion: descripcion
+    }
+
+    try{
+      await store.collection('todo').doc(idtarea).set(tareaUpdate)
+    }catch(e){console.log(e)}
+
+  }
+  const actualizarTarea = async (id)=>{
+    try{
+    const data = await store.collection('todos').doc(id).get()
+    const {tarea, descripcion} = data.data()
+    setTarea(tarea)
+    setDescripcion(descripcion)
+    setIdTarea(id)
+    setModoEdicion(true)
+    
+    }catch(e){console.log(e)}
+  }
   return (
     <div className="container">
       <div className="row">
         <div className="col">
           <h2>To Do's</h2>
-          <form onSubmit={setTareas}>
+          <form onSubmit={modoEdicion ? setUpdate : setTareas}>
             <input
               value={tarea}
               onChange={(e) => {
@@ -77,7 +112,13 @@ const Admin = () => {
               placeholder="Introduce la descripción"
               type="text"
             />
-            <input type="submit" className="btn btn-dark btn-block mt-3" />
+            {
+              modoEdicion ? 
+              (<input type="submit" value="Editar" className="btn btn-dark btn-block mt-3" />)
+              :
+              (<input type="submit" value="Crear" className="btn btn-dark btn-block mt-3" />)
+            }
+            
           </form>
           {error ? (
             <div>
@@ -103,7 +144,8 @@ const Admin = () => {
                   onClick={(id)=>{borrarTarea(item.id)}}
                   >X</button>
                   <button 
-                  className="btn btn-info float-right mt-3 mr-2"                  
+                  className="btn btn-info float-right mt-3 mr-2"
+                  onClick={(setId)=>{actualizarTarea(item.id)}}                  
                   >Editar</button>                  
                   <ul>{item.descripcion}</ul>
                 </li>
