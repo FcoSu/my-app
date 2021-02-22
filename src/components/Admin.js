@@ -97,11 +97,14 @@ const Admin = () => {
                   key={item.id}
                   className="list-group-item list-group-item-dark"
                 >
-                  {item.tarea}
+                  {item.tarea}                  
                   <button 
-                  className="btn btn-danger float-right"
+                  className="btn btn-danger float-right mt-3 mr-2"
                   onClick={(id)=>{borrarTarea(item.id)}}
                   >X</button>
+                  <button 
+                  className="btn btn-info float-right mt-3 mr-2"                  
+                  >Editar</button>                  
                   <ul>{item.descripcion}</ul>
                 </li>
               ))
